@@ -1,23 +1,23 @@
-#include <Servo.h>  //add '<' and '>' before and after servo.h
- 
-int servoPin = 14;
- 
-Servo servo;  
+#include <Servo.h> 
+/*
+int servoPin0 = 2;
+int servoPin1 = 3;
+int servoPin2 = 4;
+int servoPin3 = 5;
+int servoPin4 = 6;
+int servoPin5 = 7;
+*/
+int firstServoPin = 2;
+Servo servos[6];  
   
-void setup_servo()
+void setup_servos()
 {
-  servo.attach(servoPin);
+  for (int i = 0; i < 6; i++) {
+    servos[i].attach(i + firstServoPin);
+  }
 }
 
-void control_servo()
-{
-  if (Serial.available() > 0) {
-    long angle = Serial.parseInt();
-    if (Serial.read() == '\n') {
-      //analogWrite(servoPin,angle);
-      servo.write(angle);
-    }
-  }
-//  analogWrite(servoPin,50);
-//  servo.write(angle);
+void control_servo(int servoNum, int servoSpeedPercentage){
+  int servoSpeed = servoSpeedPercentage*0.5 + 90;
+  servos[servoNum].write(servoSpeed);
 }

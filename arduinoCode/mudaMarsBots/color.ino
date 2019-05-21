@@ -1,10 +1,12 @@
-#define S0 6
-#define S1 7
-#define S2 8
-#define S3 9
-#define sensorOut 10
+#define S0 A0
+#define S1 A1
+#define S2 A2
+#define S3 A3
+#define sensorOut A4
 
-int frequency = 0;
+int frequency[3];
+unsigned long timeNowColor = millis();
+uint8_t modeColor = 0;
 
 void setup_color() {
   pinMode(S0, OUTPUT);
@@ -18,31 +20,50 @@ void setup_color() {
   digitalWrite(S1,HIGH);  
 }
 
-void sense_color() {
-  int time_delay = 10;
+int sense_color() {
+  int period = 10;
+  int scanResult = 0;
+  if (modeColor == 0) {
+    // Red detection
+    digitalWrite(S2,LOW);
+    digitalWrite(S3,LOW);
+  } else if (modeColor == 1) {
+    // Green detection
+    digitalWrite(S2,HIGH);
+    digitalWrite(S3,HIGH);
+  } else if (modeColor == 2) {
+    // Blue detection
+    digitalWrite(S2,LOW);
+    digitalWrite(S3,HIGH);
+  }
+  if (millis() >= timeNowColor + period) {
+    frequency[modeColor] = pulseIn(sensorOut, LOW);
+    modeColor = (modeColor + 1) % 3;
+    timeNowColor = millis();
+  }
+  Serial.print("R is ");
+  Serial.print(frequency[0]);
+  Serial.print(" G is ");
+  Serial.print(frequency[1]);
+  Serial.print(" B is ");
+  Serial.print(frequency[2]);
 
-  digitalWrite(S2,LOW);
-  digitalWrite(S3,LOW);
- 
-  int frequencyR = pulseIn(sensorOut, LOW);
 
-  delay(time_delay);
-  
-  digitalWrite(S2,HIGH);
-  digitalWrite(S3,HIGH);
-  
-  int frequencyG = pulseIn(sensorOut, LOW);
- 
+  int detectionBound = 500;
+  int diffRG = frequency[0] - frequency[1];
+  int diffRB = frequency[0] - frequency[2];
+  int diffGB = frequency[1] - frequency[2];
 
-  delay(time_delay);
-  
-  digitalWrite(S2,LOW);
-  digitalWrite(S3,HIGH);
- 
-  int frequencyB = pulseIn(sensorOut, LOW);
-  
-  Serial.print("B= ");
-  Serial.print(frequency);
-  Serial.println("  ");
-  delay(100);
+  if (diffRG <= -detectionBound && diffRB <= -detectionBound) {
+    scanResult = 1;
+  } else if (diffRB >= detectionBound && diffGB >= detectionBound) {
+    scanResult = 2;
+  } else if (diffRG >= detectionBound && diffGB <= -detectionBound) {
+    scanResult = 3;
+  }
+
+  Serial.print(" Scan result is ");
+  Serial.println(scanResult);
+
+  return scanResult;
 }
