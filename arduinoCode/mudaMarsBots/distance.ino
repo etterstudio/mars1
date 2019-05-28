@@ -1,3 +1,7 @@
+/*
+ * Die Funktion setup_distance() initialisiert alles nötige um den Distanzsensor auszulesen.
+ * Die Funktion measure_distance() kann dazu benutzt werden, die Distanz des nächsten Objektes vor dem Sensor auszulesen.
+ */
 #include <NewPing.h>
  
 #define TRIGGER_PIN 8
@@ -16,11 +20,14 @@ void setup_distance() {
 }
 
 unsigned int measure_distance() {
+  /*
+   * Liest den Distanz sensor aus und gibt Distanz in Zentimetern zurück.
+   */
   int period = 50;
   if(millis() > timeNowDistance + period) {
      distance = sonar.ping_cm();
-     Serial.print(distance);
-     Serial.println("cm");
+     //Serial.print(distance);
+     //Serial.println("cm");
      timeNowDistance = millis();
   }
   

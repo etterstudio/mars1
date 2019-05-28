@@ -1,3 +1,7 @@
+/*
+ * Die Funktion setup_bluetooth() initialisiert alles nötige um Daten über Bluetooth auszulesen.
+ * Die Funktion read_bluetooth() kann dazu benutzt werden, die Richtung die von einem Handy vorgegeben wird auszulesen.
+ */
 #include <SoftwareSerial.h>
 
 #define TxD 1
@@ -14,6 +18,9 @@ void setup_bluetooth() {
 
 
 inputDirection read_bluetooth() {
+  /*
+   * Liest daten vom Bluetooth Modul kommend aus, und skaliert sie zu Werten von -100 bis 100.
+   */
   inputDirection input;
   int readDelay = 10;
 

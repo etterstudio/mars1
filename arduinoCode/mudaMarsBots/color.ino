@@ -1,3 +1,7 @@
+/*
+ * Die Funktion setup_distance() initialisiert alles nötige um den Distanzsensor auszulesen.
+ * Die Funktion measure_distance() kann dazu benutzt werden, die Distanz des nächsten Objektes vor dem Sensor auszulesen.
+ */
 #define S0 A0
 #define S1 A1
 #define S2 A2

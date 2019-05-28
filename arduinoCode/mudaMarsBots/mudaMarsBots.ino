@@ -7,10 +7,9 @@ typedef struct{
 
 void setup() {
   Serial.begin(9600);
-  setup_steppers();
   setup_servos();
   setup_color();
-  setup_bluetooth();
+  //setup_bluetooth();
   setup_distance();
 
   for (int i = 8; i <= 12; i++) {
@@ -18,10 +17,50 @@ void setup() {
   }
 }
 
+int servoSpeed = 0;
+
 void loop() {
+  // Beispiel Programm
   unsigned int distanceMeasured = measure_distance();
   unsigned int scanResult = 0;
-  if (distanceMeasured <= 5 && distanceMeasured > 0) {
+  if (distanceMeasured <= 15 && distanceMeasured > 0) {
+    scanResult = sense_color();
+  }
+
+  if (scanResult == 1) {
+    for (int i = 8; i <= 11; i++) {
+      digitalWrite(i, 0);
+    }
+    digitalWrite(12, 1);
+  } else if (scanResult == 2) {
+    for (int i = 8; i <= 10; i++) {
+      digitalWrite(i, 0);
+    }
+    digitalWrite(11, 1);
+    digitalWrite(12, 0);
+  }
+  else {
+    for (int i = 8; i <= 12; i++) {
+      digitalWrite(i, 0);
+    }
+  }
+
+  servoSpeed = modify_through_serial(servoSpeed);
+
+  Serial.println(servoSpeed);
+
+  control_servo(0, servoSpeed);
+  control_servo(1, -servoSpeed);
+  control_servo(2, servoSpeed);
+  control_servo(3, -servoSpeed);
+  control_servo(4, -servoSpeed);
+  control_servo(5, -servoSpeed);
+}
+
+void bluetooth_mode() {
+  unsigned int distanceMeasured = measure_distance();
+  unsigned int scanResult = 0;
+  if (distanceMeasured <= 15 && distanceMeasured > 0) {
     scanResult = sense_color();
   }
 
